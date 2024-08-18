@@ -1,0 +1,36 @@
+.admin-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.admin-page h2 {
+  text-align: center;
+}
+
+.admin-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-page input[type="file"] {
+  margin-top: 5px;
+}
+
+.admin-page button {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.admin-page button:hover {
+  background-color: #45a049;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}

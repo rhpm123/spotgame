@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ dest: 'uploads/' });
 
 // 여러 이미지 세트 추가
 const gameSets = [
@@ -88,21 +88,26 @@ app.post('/api/login', async (req, res) => {
 });
 
 // 관리자용 이미지 업로드 엔드포인트
-app.post('/api/upload', upload.single('image'), (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ message: 'No token provided' });
+app.post('/api/upload', upload.array('image', 2), (req, res) => { // 중괄호 추가
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'No token provided' });
 
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(401).json({ message: 'Invalid token' });
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      if (err) return res.status(401).json({ message: 'Invalid token' });
 
-    // 관리자인지 확인하는 로직 추가 (예: 관리자 사용자명을 검사)
-    if (decoded.username !== 'admin') {
-      return res.status(403).json({ message: 'Unauthorized' });
-    }
+      // 관리자인지 확인하는 로직 추가 (예: 관리자 사용자명을 검사)
+      if (decoded.username !== 'admin') {
+        return res.status(403).json({ message: 'Unauthorized' });
+      }
 
-    res.json({ filePath: `/uploads/${req.file.filename}` });
-  });
-});
+      res.json({ message: '파일 업로드 성공' });
+    });
+  } catch (error) {
+    console.error('File upload error:', error);
+    res.status(500).json({ message: '파일 업로드 중 오류 발생', error: error.message });
+  }
+}); // 'catch' 블록 추가
 
 app.get('/api/game', (req, res) => {
   const difficulty = req.query.difficulty || 'medium';
